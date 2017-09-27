@@ -1,0 +1,29 @@
+﻿<UserControl
+    x:Class="NotifyBirthday.CustomBalloon"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    x:Name="me"
+    Width="160"
+    Height="50">
+    <Grid>
+        <Border
+            Background="White"
+            BorderBrush="Silver"
+            BorderThickness="2"
+            CornerRadius="10"
+            Opacity="1" />
+        <TextBlock
+            Width="140"
+            Height="13"
+            Margin="10,2"
+            VerticalAlignment="Top"
+            FontSize="10"
+            Text="Уведомление"
+            TextAlignment="Left" />
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Text="Тут текст уведомления" />
+    </Grid>
+</UserControl>
