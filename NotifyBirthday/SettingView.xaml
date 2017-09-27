@@ -22,7 +22,7 @@
             Margin="11,71,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Content="Период оповещениея, дней"
+            Content="Период оповещения, дней"
             RenderTransformOrigin="0.667,0.987" />
         <ComboBox
             Width="177"
@@ -30,7 +30,8 @@
             Margin="10,41,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            SelectedItem="{Binding SelectFrequency, UpdateSourceTrigger=PropertyChanged}">
+            SelectedIndex="{Binding SelectIndex}"
+            SelectedItem="{Binding Path=SelectFrequency}">
             <ComboBoxItem Content="1" />
             <ComboBoxItem Content="2" />
             <ComboBoxItem Content="3" />

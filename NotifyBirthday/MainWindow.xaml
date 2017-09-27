@@ -16,9 +16,10 @@
             Margin="10,30,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
+            IsManipulationEnabled="True"
             ItemsSource="{Binding Employees}"
             SelectedItem="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}"
-            UseLayoutRounding="False" IsManipulationEnabled="True">
+            UseLayoutRounding="True">
             <ListView.View>
                 <GridView>
                     <GridViewColumn

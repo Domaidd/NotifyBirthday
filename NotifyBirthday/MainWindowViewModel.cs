@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -65,10 +66,10 @@ namespace NotifyBirthday
         }
         public DateTime InputDate
         {
-            get { return _datebirthday; }
+            get { return _datebirthday.Date; }
             set
             {
-                _datebirthday = value;
+                _datebirthday = value.Date;
                 RaisePropertyChanged("Datebirthday");
                 AddEmployee.RaiseCanExecuteChanged();
             }
@@ -148,6 +149,7 @@ namespace NotifyBirthday
 
         public void CloseApp_Execute()
         {
+            window.Visibility = Visibility.Hidden;
             window.Close();
         }
 
@@ -159,13 +161,30 @@ namespace NotifyBirthday
             {
                 Employees = new ObservableCollection<Employee>();
             }
-            Employee employee = new Employee(InputName, InputSurname, InputMiddlename, InputDate);
+            Employee employee = new Employee(InputName, InputSurname, InputMiddlename, InputDate.Date);
             Employees.Add(employee);
         }
 
         public bool AddEmployee_CanExecute()
         {
-            return InputName != null && InputSurname != null && InputMiddlename != null && InputDate != null;
+            return ValidAddEmploeey();
+        }
+
+        public bool ValidAddEmploeey()
+        {
+            if (InputName != null && InputSurname != null && InputMiddlename != null && InputDate != null)
+            {
+                if (Regex.IsMatch(InputSurname, @"[a-z, A-Z, а-я, А-Я]")
+                    && Regex.IsMatch(InputName, @"[a-z, A-Z, а-я, А-Я]")
+                    && Regex.IsMatch(InputMiddlename, @"[a-z, A-Z, а-я, А-Я]")
+                    //&& !Regex.IsMatch(InputDate.Date.ToString(), @"[a-z, A-Z, а-я, А-Я]")
+                    )
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
         }
 
         public RelayCommand RemoveEmployee { get; private set; }
@@ -196,6 +215,7 @@ namespace NotifyBirthday
             };
             settingViewViewModel.Frequency = settingViewViewModel.Config.Frequency;
             settingViewViewModel.Period = settingViewViewModel.Config.Period;
+            settingViewViewModel.SetIndex();
             settingView = new SettingView
             {
                 DataContext = settingViewViewModel
@@ -267,9 +287,12 @@ namespace NotifyBirthday
                     }
                     else Employees[i].Flag = true;
                 }
-                if (!BallonEmployee.Flag)
+                if (BallonEmployee != null)
                 {
-                    Employees[i].Flag = false;
+                    if (!BallonEmployee.Flag)
+                    {
+                        Employees[i].Flag = false;
+                    }
                 }
             }
         }
