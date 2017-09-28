@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows.Controls;
 
 namespace NotifyBirthday
@@ -14,11 +15,7 @@ namespace NotifyBirthday
         public int Frequency
         {
             get { return _frequency; }
-            set
-            {
-                _frequency = value;
-                SaveConfig.RaiseCanExecuteChanged();
-            }
+            set { _frequency = value; }
         }
 
         private int _period;
@@ -34,17 +31,6 @@ namespace NotifyBirthday
             }
         }
 
-        private int _selectIndex;
-
-        public int SelectIndex
-        {
-            get { return _selectIndex; }
-            set
-            {
-                _selectIndex = value;
-            }
-        }
-
         private ComboBoxItem _selectFrequency;
 
         public ComboBoxItem SelectFrequency
@@ -57,11 +43,22 @@ namespace NotifyBirthday
                 SaveConfig.RaiseCanExecuteChanged();
             }
         }
+        private int _selectIndex;
+
+        public int SelectIndex
+        {
+            get { return _selectIndex; }
+            set
+            {
+                _selectIndex = value;
+            }
+        }
 
         public SettingViewViewModel()
         {
             SaveConfig = new RelayCommand(SaveConfig_Execute, SaveConfig_CanExecute);
         }
+
         public void SetIndex()
         {
             switch (Frequency)
@@ -101,8 +98,7 @@ namespace NotifyBirthday
 
         public bool SaveConfig_CanExecute()
         {
-            return true;
-            //return SelectFrequency != null && Period > 0;
+            return SelectFrequency != null && Period > 0 && Regex.IsMatch(Period.ToString(), @"[0-9]");
         }
 
         public void Disponse()

@@ -31,7 +31,7 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             SelectedIndex="{Binding SelectIndex}"
-            SelectedItem="{Binding Path=SelectFrequency}">
+            SelectedItem="{Binding SelectFrequency}">
             <ComboBoxItem Content="1" />
             <ComboBoxItem Content="2" />
             <ComboBoxItem Content="3" />

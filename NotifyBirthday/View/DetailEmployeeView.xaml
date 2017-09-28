@@ -1,0 +1,81 @@
+﻿<Window
+    x:Class="NotifyBirthday.DetailEmployeeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:NotifyBirthday"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Изменить сотрудника"
+    Width="184.519"
+    Height="306.904"
+    ResizeMode="NoResize"
+    WindowStyle="ToolWindow"
+    mc:Ignorable="d">
+    <Grid>
+        <Button
+            Width="75"
+            Margin="90,245,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding DetailEmployee}"
+            Content="Изменить"
+            IsManipulationEnabled="True" />
+        <TextBox
+            Width="156"
+            Height="23"
+            Margin="10,36,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="White"
+            Text="{Binding InputSurname, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap" />
+        <TextBox
+            Width="156"
+            Height="23"
+            Margin="10,95,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{Binding InputName, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap" />
+        <TextBox
+            Width="156"
+            Height="23"
+            Margin="10,154,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{Binding InputMiddlename, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap" />
+        <DatePicker
+            Width="156"
+            Margin="9,213,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            SelectedDate="{Binding InputDate, UpdateSourceTrigger=PropertyChanged}"
+            SelectedDateFormat="Short"
+            Text="{Binding InputDate, UpdateSourceTrigger=PropertyChanged}" />
+        <Label
+            Width="156"
+            Margin="10,5,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Фамилия" />
+        <Label
+            Width="156"
+            Margin="10,64,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Имя" />
+        <Label
+            Width="156"
+            Margin="9,123,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Отчество" />
+        <Label
+            Width="156"
+            Margin="10,182,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Дата рождения" />
+    </Grid>
+</Window>
