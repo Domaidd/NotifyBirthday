@@ -33,6 +33,7 @@ namespace NotifyBirthday
 
         private ComboBoxItem _selectFrequency;
 
+
         public ComboBoxItem SelectFrequency
         {
             get { return _selectFrequency; }

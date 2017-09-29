@@ -93,7 +93,7 @@ namespace NotifyBirthday
 
         public bool ValidAddEmploeey()
         {
-            if (InputName != null && InputSurname != null && InputMiddlename != null && InputDate != null)
+            if (InputName != null && InputSurname != null && InputDate != null)
             {
                 if (Regex.IsMatch(InputSurname, @"[a-z, A-Z, а-я, А-Я]")
                     && Regex.IsMatch(InputName, @"[a-z, A-Z, а-я, А-Я]")

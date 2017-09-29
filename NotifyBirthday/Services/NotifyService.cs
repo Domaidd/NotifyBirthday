@@ -16,9 +16,7 @@ namespace NotifyBirthday
         public void Notify(string message)
         {
             icon.ShowBalloonTip("Оповещение", message + "\nНажмите на облако, чтобы больше не видеть это оповещение.", BalloonIcon.Info);
-            Thread.Sleep(6000);
             icon.CloseBalloon();
         }
-
     }
 }

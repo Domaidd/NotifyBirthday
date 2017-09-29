@@ -52,7 +52,7 @@ namespace NotifyBirthday
             get { return _datebirthday.Date; }
             set
             {
-                _datebirthday = value.Date;
+                _datebirthday = value;
                 RaisePropertyChanged("Datebirthday");
                 AddEmployee.RaiseCanExecuteChanged();
             }
@@ -74,7 +74,7 @@ namespace NotifyBirthday
             {
                 Employees = new ObservableCollection<Employee>();
             }
-            Employee employee = new Employee(InputName, InputSurname, InputMiddlename, InputDate.Date);
+            Employee employee = new Employee(InputName, InputSurname, InputMiddlename, InputDate);
             Employees.Add(employee);;
         }
 
@@ -85,7 +85,7 @@ namespace NotifyBirthday
 
         public bool ValidAddEmploeey()
         {
-            if (InputName != null && InputSurname != null && InputMiddlename != null && InputDate != null)
+            if (InputName != null && InputSurname != null && InputDate != null)
             {
                 if (Regex.IsMatch(InputSurname, @"[a-z, A-Z, а-я, А-Я]")
                     && Regex.IsMatch(InputName, @"[a-z, A-Z, а-я, А-Я]")

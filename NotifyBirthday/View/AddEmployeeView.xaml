@@ -6,9 +6,10 @@
     xmlns:local="clr-namespace:NotifyBirthday"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Добавить сотрудника"
-    Width="184.519"
+    Width="191.582"
     Height="306.904"
     ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
     WindowStyle="ToolWindow"
     mc:Ignorable="d">
     <Grid>

@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -9,12 +10,13 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
+using System.Windows.Input;
 
 namespace NotifyBirthday
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        #region Private properties
+        #region Fields
         private int Frequency;
 
         private int Period;
@@ -33,6 +35,8 @@ namespace NotifyBirthday
 
         private Employee _selectedEmployee;
 
+        private ObservableCollection<Employee> _employees;
+
         private TimerCallback timerCallback;
 
         private Timer timer;
@@ -40,8 +44,19 @@ namespace NotifyBirthday
         private readonly NotifyService notifyService = new NotifyService();
         #endregion
 
-        #region Public properties
-        public ObservableCollection<Employee> Employees { get; set; }
+        #region Properties
+        public ObservableCollection<Employee> Employees
+        {
+            get { return _employees; }
+            set
+            {
+                if (_employees != value)
+                {
+                    _employees = value;
+                    RaisePropertyChanged("Employees");
+                }
+            }
+        }
 
         public Window window;
 
@@ -51,9 +66,9 @@ namespace NotifyBirthday
             set
             {
                 _selectedEmployee = value;
-                RaisePropertyChanged("SelectedEmployee");
-                RemoveEmployee.RaiseCanExecuteChanged();
+                RaisePropertyChanged("SelectFrequency");
                 OpenDetailEmployeeView.RaiseCanExecuteChanged();
+                RemoveEmployee.RaiseCanExecuteChanged();
             }
         }
 
@@ -65,10 +80,12 @@ namespace NotifyBirthday
         {
             AddNotifyService();
             RemoveEmployee = new RelayCommand(RemoveEmployee_Execute, RemoveEmployee_CanExecute);
-            OpenSetting = new RelayCommand(OpenSetting_Execute, OpenSetting_CanExecute);
-            OpenAddEmployeeView = new RelayCommand(OpenAddEmployeeView_Execute, OpenAddEmployeeView_CanExecute);
+            OpenSetting = new RelayCommand(OpenSetting_Execute);
+            OpenAddEmployeeView = new RelayCommand(OpenAddEmployeeView_Execute);
             OpenDetailEmployeeView = new RelayCommand(OpenDetailEmployeeView_Execute, OpenDetailEmployeeView_CanExecute);
+            ExportXml = new RelayCommand(ExportXml_Execute);
             CloseApp = new RelayCommand(CloseApp_Execute);
+            ImportXml = new RelayCommand(ImportXml_Execute);
 
             LoadConfig();
             if (Frequency > 0 && Period > 0)
@@ -98,12 +115,7 @@ namespace NotifyBirthday
                 DataContext = addEmployeeViewViewModel
             };
             addEmployeeView.Closed += AddEmployeeView_Closed;
-            addEmployeeView.Show();
-        }
-
-        public bool OpenAddEmployeeView_CanExecute()
-        {
-            return addEmployeeView == null && detailEmployeeView == null && settingView == null;
+            addEmployeeView.ShowDialog();
         }
 
         private void AddEmployeeView_Closed(object sender, EventArgs e)
@@ -128,17 +140,27 @@ namespace NotifyBirthday
             detailEmployeeViewViewModel.InputMiddlename = SelectedEmployee.Middlename;
             detailEmployeeViewViewModel.InputDate = SelectedEmployee.Datebirthday;
             detailEmployeeView.Closed += DetailEmployeeView_Closed;
-            detailEmployeeView.Show();
+            detailEmployeeView.ShowDialog();
         }
 
         private void DetailEmployeeView_Closed(object sender, EventArgs e)
         {
+            List<Employee> collection = new List<Employee>();
+            foreach (var item in Employees)
+            {
+                collection.Add(item);
+            }
+            Employees.Clear();
+            foreach (var item in collection)
+            {
+                Employees.Add(item);
+            }
             detailEmployeeView = null;
         }
 
         public bool OpenDetailEmployeeView_CanExecute()
         {
-            return SelectedEmployee != null && addEmployeeView == null && detailEmployeeView == null && settingView == null;
+            return SelectedEmployee != null;
         }
 
         public RelayCommand OpenSetting { get; private set; }
@@ -162,12 +184,7 @@ namespace NotifyBirthday
             };
             settingView.ResizeMode = ResizeMode.NoResize;
             settingView.Closed += SettingView_Closed;
-            settingView.Show();
-        }
-
-        private bool OpenSetting_CanExecute()
-        {
-            return addEmployeeView == null && detailEmployeeView == null && settingView == null;
+            settingView.ShowDialog();
         }
 
         private void SettingView_Closed(object sender, EventArgs e)
@@ -219,6 +236,18 @@ namespace NotifyBirthday
             window.Visibility = Visibility.Hidden;
             window.Close();
         }
+
+        public RelayCommand ExportXml { get; set; }
+        public void ExportXml_Execute()
+        {
+            DataManager.Export(Employees);
+        }
+
+        public RelayCommand ImportXml { get; set; }
+        public void ImportXml_Execute()
+        {
+            Employees = DataManager.Import<ObservableCollection<Employee>>();
+        }
         #endregion
 
         #region Services
@@ -239,6 +268,19 @@ namespace NotifyBirthday
             notifyService.icon.ContextMenu.Items.Add(separator);
             notifyService.icon.ContextMenu.Items.Add(item2);
             notifyService.icon.TrayBalloonTipClicked += Icon_TrayBalloonTipClicked;
+            notifyService.icon.LeftClickCommand = OpenApp_Click;
+        }
+        private ICommand _openApp;
+        public ICommand OpenApp_Click
+        {
+            get
+            {
+                return _openApp ?? (_openApp = new RelayCommand(() =>
+                {
+                    window.Show();
+                    window.WindowState = WindowState.Normal;
+                }));
+            }
         }
 
         private void Icon_TrayBalloonTipClicked(object sender, RoutedEventArgs e)
@@ -304,6 +346,64 @@ namespace NotifyBirthday
                     }
                 }
             }
+        }
+        #endregion
+
+        #region Sort
+        private ListSortDirection _sortDirection;
+        private GridViewColumnHeader _sortColumn;
+
+        private void ThirdResultDataViewClick(object sender, RoutedEventArgs e)
+        {
+            GridViewColumnHeader column = e.OriginalSource as GridViewColumnHeader;
+            if (column == null)
+            {
+                return;
+            }
+
+            if (_sortColumn == column)
+            {
+                // Toggle sorting direction
+                _sortDirection = _sortDirection == ListSortDirection.Ascending ?
+                                                   ListSortDirection.Descending :
+                                                   ListSortDirection.Ascending;
+            }
+            else
+            {
+                // Remove arrow from previously sorted header
+                if (_sortColumn != null)
+                {
+                    _sortColumn.Column.HeaderTemplate = null;
+                    _sortColumn.Column.Width = _sortColumn.ActualWidth - 20;
+                }
+
+                _sortColumn = column;
+                _sortDirection = ListSortDirection.Ascending;
+                column.Column.Width = column.ActualWidth + 20;
+            }
+
+            if (_sortDirection == ListSortDirection.Ascending)
+            {
+                column.Column.HeaderTemplate =
+                                   window.Resources["ArrowUp"] as DataTemplate;
+            }
+            else
+            {
+                column.Column.HeaderTemplate =
+                                    window.Resources["ArrowDown"] as DataTemplate;
+            }
+
+            string header = string.Empty;
+
+            // if binding is used and property name doesn't match header content
+            Binding b = _sortColumn.Column.DisplayMemberBinding as Binding;
+            if (b != null)
+            {
+                header = b.Path.Path;
+            }
+
+            var viewModel = DataContext as SortingViewModel;
+            viewModel.Sort(header);
         }
         #endregion
     }
