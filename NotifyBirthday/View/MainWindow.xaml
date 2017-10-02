@@ -17,21 +17,33 @@
             Margin="10,30,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            ItemsSource="{Binding Employees, UpdateSourceTrigger=PropertyChanged}"
+            ItemsSource="{Binding EmployeesView, UpdateSourceTrigger=PropertyChanged}"
             SelectedItem="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="120" DisplayMemberBinding="{Binding Surname}">
-                        <GridViewColumnHeader Content="Фамилия" />
+                        <GridViewColumnHeader
+                            Command="{Binding SortListView}"
+                            CommandParameter="Surname"
+                            Content="Фамилия" />
                     </GridViewColumn>
                     <GridViewColumn Width="120" DisplayMemberBinding="{Binding Name}">
-                        <GridViewColumnHeader Content="Имя" />
+                        <GridViewColumnHeader
+                            Command="{Binding SortListView}"
+                            CommandParameter="Name"
+                            Content="Имя" />
                     </GridViewColumn>
                     <GridViewColumn Width="120" DisplayMemberBinding="{Binding Middlename}">
-                        <GridViewColumnHeader Content="Отчество" />
+                        <GridViewColumnHeader
+                            Command="{Binding SortListView}"
+                            CommandParameter="Middlename"
+                            Content="Отчество" />
                     </GridViewColumn>
                     <GridViewColumn Width="130" DisplayMemberBinding="{Binding Datebirthday, StringFormat='dd.MM.yyyy'}">
-                        <GridViewColumnHeader Content="Дата рождения" />
+                        <GridViewColumnHeader
+                            Command="{Binding SortListView}"
+                            CommandParameter="Datebirthday"
+                            Content="Дата рождения" />
                     </GridViewColumn>
                 </GridView>
             </ListView.View>

@@ -59,13 +59,13 @@
             Margin="10,5,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Content="Фамилия" />
+            Content="Фамилия*" />
         <Label
             Width="156"
             Margin="10,64,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Content="Имя" />
+            Content="Имя*" />
         <Label
             Width="156"
             Margin="9,123,0,0"
@@ -77,7 +77,7 @@
             Margin="10,182,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Content="Дата рождения" />
+            Content="Дата рождения*" />
 
     </Grid>
 </Window>

@@ -107,12 +107,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="MyUserControls\NotyfiBalloon.xaml.cs">
-      <DependentUpon>NotyfiBalloon.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MyUserControls\SortListView.xaml.cs">
-      <DependentUpon>SortListView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Services\CustomRelayCommand.cs" />
     <Compile Include="View\AddEmployeeView.xaml.cs">
       <DependentUpon>AddEmployeeView.xaml</DependentUpon>
     </Compile>
@@ -130,14 +125,6 @@
       <DependentUpon>SettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\SettingViewViewModel.cs" />
-    <Page Include="MyUserControls\NotyfiBalloon.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MyUserControls\SortListView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\AddEmployeeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -205,6 +192,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Error.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MyUserControls\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

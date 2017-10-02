@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
 using System.Windows.Input;
+using System.Windows.Data;
 
 namespace NotifyBirthday
 {
@@ -37,6 +38,12 @@ namespace NotifyBirthday
 
         private ObservableCollection<Employee> _employees;
 
+        private CollectionViewSource _employeesView;
+
+        private string _sortColumn;
+
+        private ListSortDirection _sortDirection;
+
         private TimerCallback timerCallback;
 
         private Timer timer;
@@ -53,9 +60,17 @@ namespace NotifyBirthday
                 if (_employees != value)
                 {
                     _employees = value;
-                    RaisePropertyChanged("Employees");
+                    _employeesView = new CollectionViewSource
+                    {
+                        Source = _employees
+                    };
                 }
             }
+        }
+
+        public ListCollectionView EmployeesView
+        {
+            get { return (ListCollectionView)_employeesView.View; }
         }
 
         public Window window;
@@ -86,6 +101,7 @@ namespace NotifyBirthday
             ExportXml = new RelayCommand(ExportXml_Execute);
             CloseApp = new RelayCommand(CloseApp_Execute);
             ImportXml = new RelayCommand(ImportXml_Execute);
+            SortListView = new CustomRelayCommand(SortListView_Execute);
 
             LoadConfig();
             if (Frequency > 0 && Period > 0)
@@ -350,60 +366,23 @@ namespace NotifyBirthday
         #endregion
 
         #region Sort
-        private ListSortDirection _sortDirection;
-        private GridViewColumnHeader _sortColumn;
+        public CustomRelayCommand SortListView { get; private set; }
 
-        private void ThirdResultDataViewClick(object sender, RoutedEventArgs e)
+        public void SortListView_Execute(object parameter)
         {
-            GridViewColumnHeader column = e.OriginalSource as GridViewColumnHeader;
-            if (column == null)
-            {
-                return;
-            }
-
+            string column = parameter as string;
             if (_sortColumn == column)
             {
-                // Toggle sorting direction
-                _sortDirection = _sortDirection == ListSortDirection.Ascending ?
-                                                   ListSortDirection.Descending :
-                                                   ListSortDirection.Ascending;
+                _sortDirection = _sortDirection == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
             }
             else
             {
-                // Remove arrow from previously sorted header
-                if (_sortColumn != null)
-                {
-                    _sortColumn.Column.HeaderTemplate = null;
-                    _sortColumn.Column.Width = _sortColumn.ActualWidth - 20;
-                }
-
                 _sortColumn = column;
                 _sortDirection = ListSortDirection.Ascending;
-                column.Column.Width = column.ActualWidth + 20;
             }
+            _employeesView.SortDescriptions.Clear();
+            _employeesView.SortDescriptions.Add(new SortDescription(_sortColumn, _sortDirection));
 
-            if (_sortDirection == ListSortDirection.Ascending)
-            {
-                column.Column.HeaderTemplate =
-                                   window.Resources["ArrowUp"] as DataTemplate;
-            }
-            else
-            {
-                column.Column.HeaderTemplate =
-                                    window.Resources["ArrowDown"] as DataTemplate;
-            }
-
-            string header = string.Empty;
-
-            // if binding is used and property name doesn't match header content
-            Binding b = _sortColumn.Column.DisplayMemberBinding as Binding;
-            if (b != null)
-            {
-                header = b.Path.Path;
-            }
-
-            var viewModel = DataContext as SortingViewModel;
-            viewModel.Sort(header);
         }
         #endregion
     }

@@ -16,6 +16,7 @@ namespace NotifyBirthday
         private string _surname;
         private string _middlename;
         private DateTime _datebirthday;
+        private bool _check;
 
         public string InputName
         {
@@ -57,6 +58,16 @@ namespace NotifyBirthday
                 AddEmployee.RaiseCanExecuteChanged();
             }
         }
+        public bool Check
+        {
+            get { return _check; }
+            set
+            {
+                _check = value;
+                RaisePropertyChanged("Check");
+                AddEmployee.RaiseCanExecuteChanged();
+            }
+        }
 
         public ObservableCollection<Employee> Employees { get; set; }
 
@@ -85,13 +96,16 @@ namespace NotifyBirthday
 
         public bool ValidAddEmploeey()
         {
-            if (InputName != null && InputSurname != null && InputDate != null)
+            if (InputName != null && InputSurname != null && InputDate != null && (InputMiddlename == null || InputMiddlename == ""))
             {
-                if (Regex.IsMatch(InputSurname, @"[a-z, A-Z, а-я, А-Я]")
-                    && Regex.IsMatch(InputName, @"[a-z, A-Z, а-я, А-Я]")
-                    && Regex.IsMatch(InputMiddlename, @"[a-z, A-Z, а-я, А-Я]")
-                    //&& !Regex.IsMatch(InputDate.Date.ToString(), @"[a-z, A-Z, а-я, А-Я]")
-                    )
+                if (Regex.IsMatch(InputSurname, @"[a-z, A-Z, а-я, А-Я]") && Regex.IsMatch(InputName, @"[a-z, A-Z, а-я, А-Я]"))
+                {
+                    return true;
+                }
+                return false;
+            } else if (InputName != null && InputSurname != null && InputDate != null && InputMiddlename != null)
+            {
+                if (Regex.IsMatch(InputSurname, @"[a-z, A-Z, а-я, А-Я]") && Regex.IsMatch(InputName, @"[a-z, A-Z, а-я, А-Я]") && Regex.IsMatch(InputMiddlename, @"[a-z, A-Z, а-я, А-Я]"))
                 {
                     return true;
                 }
