@@ -64,6 +64,7 @@ namespace NotifyBirthday
                     {
                         Source = _employees
                     };
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -71,6 +72,11 @@ namespace NotifyBirthday
         public ListCollectionView EmployeesView
         {
             get { return (ListCollectionView)_employeesView.View; }
+            set
+            {
+                _employeesView.Source = value;
+                RaisePropertyChanged();
+            }
         }
 
         public Window window;
@@ -262,7 +268,12 @@ namespace NotifyBirthday
         public RelayCommand ImportXml { get; set; }
         public void ImportXml_Execute()
         {
-            Employees = DataManager.Import<ObservableCollection<Employee>>();
+            ObservableCollection<Employee> collection = DataManager.Import<ObservableCollection<Employee>>();
+            if (collection != null)
+            {
+                Employees = collection;
+                RaisePropertyChanged("EmployeesView");
+            }
         }
         #endregion
 
@@ -382,7 +393,6 @@ namespace NotifyBirthday
             }
             _employeesView.SortDescriptions.Clear();
             _employeesView.SortDescriptions.Add(new SortDescription(_sortColumn, _sortDirection));
-
         }
         #endregion
     }

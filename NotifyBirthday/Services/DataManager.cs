@@ -1,5 +1,9 @@
 ﻿using Microsoft.Win32;
+using System;
 using System.IO;
+using System.Windows;
+using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace NotifyBirthday
@@ -72,7 +76,15 @@ namespace NotifyBirthday
                         using (StreamReader streamReader = new StreamReader(openFileDialog.FileName))
                         {
                             XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
-                            returnedList = (T)xmlSerializer.Deserialize(streamReader);
+                            try
+                            {
+                                returnedList = (T)xmlSerializer.Deserialize(streamReader);
+                            }
+                            catch (InvalidOperationException ex)
+                            {
+                                MessageBox.Show("Произошла ошибка при загрузке файла.");
+                                returnedList = null;
+                            }
                         }
                     }
                 }
