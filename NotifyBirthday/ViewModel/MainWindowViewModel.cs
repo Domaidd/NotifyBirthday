@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
 using System.Windows.Input;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace NotifyBirthday
 {
@@ -26,14 +26,20 @@ namespace NotifyBirthday
 
         private AddEmployeeView addEmployeeView;
 
+        private NotifyBalloonView notifyBalloonView;
+
         private DetailEmployeeView detailEmployeeView;
 
         private SettingViewViewModel settingViewViewModel;
 
         private AddEmployeeViewViewModel addEmployeeViewViewModel;
 
+        private NotifyBalloonViewViewModel notifyBalloonViewViewModel;
+
         private DetailEmployeeViewViewModel detailEmployeeViewViewModel;
 
+        private bool flag = true;
+        
         private Employee _selectedEmployee;
 
         private ObservableCollection<Employee> _employees;
@@ -119,6 +125,8 @@ namespace NotifyBirthday
             {
                 timerCallback = new TimerCallback(CompareDate);
                 timer = new Timer(timerCallback, null, 10000, 3600000);
+                Frequency = 1;
+                Period = 1;
             }
         }
         #endregion
@@ -136,6 +144,7 @@ namespace NotifyBirthday
             {
                 DataContext = addEmployeeViewViewModel
             };
+            addEmployeeViewViewModel.Window = addEmployeeView;
             addEmployeeView.Closed += AddEmployeeView_Closed;
             addEmployeeView.ShowDialog();
         }
@@ -157,6 +166,7 @@ namespace NotifyBirthday
             {
                 DataContext = detailEmployeeViewViewModel
             };
+            detailEmployeeViewViewModel.Window = detailEmployeeView;
             detailEmployeeViewViewModel.InputName = SelectedEmployee.Name;
             detailEmployeeViewViewModel.InputSurname = SelectedEmployee.Surname;
             detailEmployeeViewViewModel.InputMiddlename = SelectedEmployee.Middlename;
@@ -193,8 +203,20 @@ namespace NotifyBirthday
             {
                 Config = DataManager.Load<Config>("Config.xml")
             };
-            settingViewViewModel.Frequency = settingViewViewModel.Config.Frequency;
-            settingViewViewModel.Period = settingViewViewModel.Config.Period;
+            if (settingViewViewModel.Config.Frequency != 0)
+            {
+                settingViewViewModel.Frequency = settingViewViewModel.Config.Frequency;
+                settingViewViewModel.Period = settingViewViewModel.Config.Period;
+                settingViewViewModel.prevFrequency = settingViewViewModel.Config.Frequency;
+                settingViewViewModel.prevPeriod = settingViewViewModel.Config.Period;
+            } 
+            else
+            {
+                settingViewViewModel.Frequency = Frequency;
+                settingViewViewModel.Period = Period;
+                settingViewViewModel.prevFrequency = Frequency;
+                settingViewViewModel.prevPeriod = Period;
+            }
             settingViewViewModel.SetIndex();
             settingViewViewModel.SelectFrequency = new ComboBoxItem
             {
@@ -204,6 +226,7 @@ namespace NotifyBirthday
             {
                 DataContext = settingViewViewModel
             };
+            settingViewViewModel.Window = settingView;
             settingView.ResizeMode = ResizeMode.NoResize;
             settingView.Closed += SettingView_Closed;
             settingView.ShowDialog();
@@ -215,7 +238,7 @@ namespace NotifyBirthday
             int prevFrequency = Frequency;
             int prevPeriod = Period;
             LoadConfig();
-            if (Frequency > 0 && Period > 0 && (prevFrequency != Frequency || prevPeriod != Period))
+            if (Frequency > 0 && Period >= 0 && (prevFrequency != Frequency || prevPeriod != Period))
             {
                 timer.Change(60000, Frequency * 3600000);
             }
@@ -343,6 +366,10 @@ namespace NotifyBirthday
             TimeSpan rdt;
             for (int i = 0; i < Employees.Count; i++)
             {
+                while (!flag)
+                {
+                    Thread.Sleep(10000);
+                }
                 date = Convert.ToDateTime(Employees[i].Datebirthday.Day + "." + Employees[i].Datebirthday.Month + "." + DateTime.Now.Year);
                 rdt = date - Convert.ToDateTime(DateTime.Now.Day + "." + DateTime.Now.Month + "." + DateTime.Now.Year);
                 int d = (int)rdt.TotalDays;
@@ -350,27 +377,88 @@ namespace NotifyBirthday
                 {
                     if (d > 1 && d < Period)
                     {
-                        BallonEmployee = Employees[i];
-                        notifyService.Notify(d + " дня до дня рождения " + Employees[i].Name + " " + Employees[i].Surname + " " + Employees[i].Middlename + ".");
+                        if (Employees[i].Middlename != null || Employees[i].Middlename == " " || Employees[i].Middlename == "")
+                        {
+                            ShowNotifyBalloon(d + " дня до дня рождения " + Employees[i].Name + " " + Employees[i].Surname + " " + Employees[i].Middlename + ".", Employees[i]);
+                            flag = false;
+                        }
+                        else
+                        {
+                            ShowNotifyBalloon(d + " дня до дня рождения " + Employees[i].Name + " " + Employees[i].Surname + ".", Employees[i]);
+                            flag = false;
+                        }
                     }
-                    else if (d == 1)
+                    else if (d == 1 && d == Period)
                     {
-                        BallonEmployee = Employees[i];
-                        notifyService.Notify("Завтра день рождения у " + Employees[i].Name + " " + Employees[i].Surname + " " + Employees[i].Middlename + ".");
+                        if (Employees[i].Middlename != null || Employees[i].Middlename == " " || Employees[i].Middlename == "")
+                        {
+                            ShowNotifyBalloon("Завтра день рождения у " + Employees[i].Name + " " + Employees[i].Surname + " " + Employees[i].Middlename + ".", Employees[i]);
+                            flag = false;
+                        }
+                        else
+                        {
+                            ShowNotifyBalloon("Завтра день рождения у " + Employees[i].Name + " " + Employees[i].Surname + ".", Employees[i]);
+                            flag = false;
+                        }
                     }
                     else if (d == 0)
                     {
-                        BallonEmployee = Employees[i];
-                        notifyService.Notify("Сегодня день рождения у " + Employees[i].Name + " " + Employees[i].Surname + " " + Employees[i].Middlename + ".");
+                        if (Employees[i].Middlename != null || Employees[i].Middlename == " " || Employees[i].Middlename == "")
+                        {
+                            ShowNotifyBalloon("Сегодня день рождения у " + Employees[i].Name + " " + Employees[i].Surname + " " + Employees[i].Middlename + ".", Employees[i]);
+                            flag = false;
+                        }
+                        else
+                        {
+                            ShowNotifyBalloon("Сегодня день рождения у " + Employees[i].Name + " " + Employees[i].Surname + ".", Employees[i]);
+                            flag = false;
+                        }
                     }
-                    else Employees[i].Flag = true;
-                }
-                if (BallonEmployee != null)
+                } else if (d < 0 && Employees[i].Flag == false)
                 {
-                    if (!BallonEmployee.Flag)
-                    {
-                        Employees[i].Flag = false;
-                    }
+                    Employees[i].Flag = true;
+                }
+            }
+        }
+
+        static object locker = new object();
+
+        [STAThread]
+        public void ShowNotifyBalloon(string notifyMessage, Employee employee)
+        {
+            window.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+            {
+                notifyBalloonView = new NotifyBalloonView();
+                notifyBalloonViewViewModel = new NotifyBalloonViewViewModel
+                {
+                    Window = notifyBalloonView,
+                    NotifyText = notifyMessage,
+                    employee = employee
+
+                };
+                double screenHeight = SystemParameters.FullPrimaryScreenHeight;
+                double screenWidth = SystemParameters.FullPrimaryScreenWidth;
+                notifyBalloonViewViewModel.Window.Top = screenHeight - notifyBalloonViewViewModel.Window.Height;
+                notifyBalloonViewViewModel.Window.Left = screenWidth - notifyBalloonViewViewModel.Window.Width;
+                notifyBalloonView.DataContext = notifyBalloonViewViewModel;
+                notifyBalloonView.Closed += notifyBalloonView_Closed;
+                notifyBalloonView.Show();
+            }));
+        }
+
+        private void notifyBalloonView_Closed(object sender, EventArgs e)
+        {
+            for (int i = 0; i < Employees.Count; i++)
+            {
+                if (Employees[i].Name == notifyBalloonViewViewModel.employee.Name &&
+                    Employees[i].Surname == notifyBalloonViewViewModel.employee.Surname &&
+                    Employees[i].Middlename == notifyBalloonViewViewModel.employee.Middlename &&
+                    Employees[i].Datebirthday == notifyBalloonViewViewModel.employee.Datebirthday)
+                {
+                    Employees[i] = notifyBalloonViewViewModel.employee;
+                    RaisePropertyChanged("Employees");
+                    flag = true;
+                    break;
                 }
             }
         }

@@ -8,9 +8,9 @@
     Title="Настройки"
     Width="213.503"
     Height="202.092"
+    WindowStartupLocation="CenterScreen"
     WindowStyle="ToolWindow"
-    mc:Ignorable="d"
-    WindowStartupLocation="CenterScreen">
+    mc:Ignorable="d">
     <Grid>
         <Label
             Width="177"

@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace NotifyBirthday
@@ -30,6 +31,11 @@ namespace NotifyBirthday
                 SaveConfig.RaiseCanExecuteChanged();
             }
         }
+
+        public int prevFrequency;
+        public int prevPeriod;
+
+        public Window Window;
 
         private ComboBoxItem _selectFrequency;
 
@@ -95,11 +101,12 @@ namespace NotifyBirthday
         public void SaveConfig_Execute()
         {
             Config = new Config(Convert.ToInt32(SelectFrequency.Content.ToString()), Period);
+            Window.Close();
         }
 
         public bool SaveConfig_CanExecute()
         {
-            return SelectFrequency != null && Period > 0 && Regex.IsMatch(Period.ToString(), @"[0-9]");
+            return SelectFrequency != null && Period >= 0 && Regex.IsMatch(Period.ToString(), @"[0-9]") && (prevFrequency != Frequency || prevPeriod != Period);
         }
 
         public void Disponse()

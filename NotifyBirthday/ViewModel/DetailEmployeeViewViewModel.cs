@@ -1,12 +1,8 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace NotifyBirthday
 {
@@ -17,6 +13,8 @@ namespace NotifyBirthday
         private string _middlename;
         private DateTime _datebirthday;
         private Employee _selectedEmployee;
+
+        public Window Window;
 
         public string InputName
         {
@@ -84,6 +82,7 @@ namespace NotifyBirthday
             SelectedEmployee.Surname = InputSurname;
             SelectedEmployee.Middlename = InputMiddlename;
             SelectedEmployee.Datebirthday = InputDate;
+            Window.Close();
         }
 
         public bool DetailEmployee_CanExecute()

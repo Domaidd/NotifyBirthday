@@ -1,12 +1,9 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace NotifyBirthday
 {
@@ -17,6 +14,8 @@ namespace NotifyBirthday
         private string _middlename;
         private DateTime _datebirthday;
         private bool _check;
+
+        public Window Window;
 
         public string InputName
         {
@@ -86,7 +85,8 @@ namespace NotifyBirthday
                 Employees = new ObservableCollection<Employee>();
             }
             Employee employee = new Employee(InputName, InputSurname, InputMiddlename, InputDate);
-            Employees.Add(employee);;
+            Employees.Add(employee);
+            Window.Close();
         }
 
         public bool AddEmployee_CanExecute()

@@ -52,8 +52,7 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             SelectedDate="{Binding InputDate, UpdateSourceTrigger=PropertyChanged}"
-            SelectedDateFormat="Short"
-            Text="{Binding InputDate, UpdateSourceTrigger=PropertyChanged}" />
+            Text="{Binding InputDate, StringFormat='dd.MM.yyyy', UpdateSourceTrigger=PropertyChanged}" />
         <Label
             Width="156"
             Margin="10,5,0,0"
